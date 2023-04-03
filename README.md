@@ -39,7 +39,19 @@ flowchart LR;
 ```mermaid
 %%{init: {'flowchart' : {'curve' : 'linear'}}}%%
 flowchart TB;
-    subgraph 叫
+    subgraph 詢問[詢問]
+        direction TB
+        詢問1["
+            主訴: 哪裡不舒服? 感覺怎樣? 多久?
+            之前: 不舒服前在做什麼?
+            吃過: 最近一次用餐時間?
+            藥: 服用任何藥物?
+            敏: 食物或藥物過敏?
+            感: 其他不舒服?
+        "]
+        style 詢問1 text-align: left
+    end
+    subgraph 叫 ["叫 AVPU"]
         direction TB
         叫1[哪裡不舒服?]-->|沒反應| 叫2{{+ 拍肩}}
         叫2-->|沒反應| 叫3{{頸動脈}}
@@ -48,64 +60,171 @@ flowchart TB;
     叫-->A
     subgraph A
         direction TB
-        A1[呼吸道]-->|鼾聲雜音| A2>給鼻管]
-        A1[呼吸道]-->|阻塞| A3>暢通]
-        A1[呼吸道]-->|對痛無反應| A4>"口咽、喉咽"]
+        A1[呼吸道]-->|"鼾聲、雜音"| A2>"暢通<sub>呼吸道</sub>"]
+        A2-->A3{無改善}
+        A3-->A4>鼻管]
+        A3-->|痛無反應| A5>口咽]
         style A2 stroke-dasharray: 5 5
-        style A3 stroke-dasharray: 5 5
         style A4 stroke-dasharray: 5 5
+        style A5 stroke-dasharray: 5 5
     end
     A-->B
     subgraph B
         direction TB
-        B1[呼吸深淺快慢]-->|"≥ 24"| B2>Sample mask]
+        B1[呼吸深淺快慢]-->|"≥ 24"| B2>"(Sample) Mask"]
         B1[呼吸深淺快慢]-->|"≥ 30 ≤ 10"| B3>NRM]
         style B2 stroke-dasharray: 5 5
         style B3 stroke-dasharray: 5 5
     end
     B-->C
-    subgraph C
+    subgraph C ["C 循環"]
+        direction LR
+        C1["<sub>目視有無</sub>大出血"]
+        C1-->C2[橈動脈對等]
+        C2-->C3[CRT]
+        C3-->C4[末端濕冷]
+        C4-->C5[膚色蒼白 臉色發紺]
+    end
+    C-->D
+    subgraph D ["D 失能"]
+        direction LR
+        D1["GCS"]
+        D1-->D2["瞳孔"]
+        D2-->D3["<sub>四肢</sub>感<sub>覺</sub>運<sub>動</sub>"]
+    end
+    D-->E
+    subgraph E ["E 暴露"]
+        direction LR
+        E1["
+            目視頭頸胸腹骨盆四隻是否有致命性傷口，必要時移除衣物
+            頸: 氣管<sub>是否偏移</sub>
+            頸: 頸靜脈<sub>是否怒張或塌陷</sub>
+            頸: 頸椎<sub>是否壓痛</sub>
+            胸: <sub>有無</sub>皮下氣腫
+            股盆: 骨盆<sub>是否穩固</sub>
+        "]
+        style E1 text-align: left
+    end
+    E-->輔助
+    subgraph 輔助
+        direction LR
+        輔助1["
+            除非 OHCA: 血壓、血氧、體溫
+            急性意識改變或頭部創傷: 瞳孔
+            呼吸困難或胸部創傷: 聽診<sub>肺音</sub>
+        "]
+        style 輔助1 text-align: left
+    end
+    輔助-->危急{危急個案}
+    危急-->二評
+    subgraph 二評["二評 (BLS 非危急現場二評)"]
+        direction LR
+        二評1["[意<sub>識</sub>]、[呼<sub>吸</sub>]、脈<sub>搏</sub>、<sub>血</sub>壓、[瞳<sub>孔</sub>]、體<sub>溫</sub>、[膚<sub>色</sub>]、<sub>血</sub>氧"]
+        二評2["
+            頭: 額骨顴骨下顎骨<sub>是否穩固</sub>、<sub>是否</sub>耳漏鼻漏、熊貓眼耳後瘀青
+            胸: 鎖骨上胸下胸<sub>是否穩固</sub>，起伏<sub>是否對等</sub>、<sub>聽診</sub>肺音
+            腹: <sub>是否</sub>瘀青、傷口、腫脹、<sub>是否</sub>壓痛<sub>(四區)</sub>
+            四肢: <sub>是否</sub>瘀青、傷口、腫脹、變形，<sub>是否</sub>對等
+            紅疹紫斑
+        "]
+        style 二評2 text-align: left
+    end
+    二評-->救護車回報
+```
+
+### 非創流程
+
+```mermaid
+%%{init: {'flowchart' : {'curve' : 'linear'}}}%%
+flowchart TB;
+    subgraph 詢問[詢問]
         direction TB
+        詢問1["
+            主訴: 哪裡不舒服? 感覺怎樣? 多久?
+            之前: 不舒服前在做什麼?
+            吃過: 最近一次用餐時間?
+            藥: 服用任何藥物?
+            敏: 食物或藥物過敏?
+            感: 其他不舒服?
+        "]
+        style 詢問1 text-align: left, stroke-dasharray: 5 5
+    end
+    詢問-->|胸痛|胸痛
+    subgraph 胸痛[OPQRST]
+        胸痛1["
+            O: 突然? 慢慢?
+            P: 緩解? 加劇?
+            Q: 壓迫緊縮?悶痛?刺痛?撕裂痛?
+            R: <sub>有無</sub>轉移?
+            S: 程度1~10?
+            T: 多久?
+            其他症狀?
+        "]
+        style 胸痛1 text-align: left, stroke-dasharray: 5 5
+    end
+    subgraph 叫 ["叫 AVPU"]
+        direction TB
+        叫1[哪裡不舒服?]-->|沒反應| 叫2{{+ 拍肩}}
+        叫2-->|沒反應| 叫3{{頸動脈}}
+        叫3-->|沒脈搏| 叫4[[OHCA]]
+    end
+    叫-->A
+    subgraph A
+        direction TB
+        A1[呼吸道]-->|"鼾聲、雜音"| A2>"暢通<sub>呼吸道</sub>"]
+        A2-->A3{無改善}
+        A3-->A4>鼻管]
+        A3-->|痛無反應| A5>口咽]
+        style A2 stroke-dasharray: 5 5
+        style A4 stroke-dasharray: 5 5
+        style A5 stroke-dasharray: 5 5
+    end
+    A-->B
+    subgraph B
+        direction TB
+        B1[呼吸深淺快慢]-->|"≥ 24"| B2>"(Sample) Mask"]
+        B1[呼吸深淺快慢]-->|"≥ 30 ≤ 10"| B3>NRM]
+        style B2 stroke-dasharray: 5 5
+        style B3 stroke-dasharray: 5 5
+    end
+    B-->C
+    subgraph C ["C 循環"]
+        direction LR
         C1[橈動脈對等]
         C1-->C2[CRT]
         C2-->C3[末端濕冷]
         C3-->C4[膚色蒼白 臉色發紺]
     end
-    B-->詢問
-    subgraph 詢問[詢問]
-        direction TB
-        詢問1[主訴: 哪裡不舒服?感覺怎樣?多久了?]
-        詢問1-->詢問2[之前: 不舒服前在做什麼?]
-        詢問2-->詢問3[吃過: 最近一次用餐時間?]
-        詢問3-->詢問4[藥: 服用任何藥物?]
-        詢問4-->詢問5[敏: 食物或藥物過敏?]
-        詢問5-->詢問6[感: 其他不舒服?]
-    end
     C-->輔助
     subgraph 輔助
         direction LR
-        輔助1["血壓、血氧、體溫"]
-        輔助1-->|"混亂、冒冷汗、虛弱、顫抖、嚴重脫水\n低體溫、糖尿病、肝硬化"|輔助糖(血糖)
-        輔助1-->|急性意識改變|輔助意識("血糖、GCS")
-        輔助1-->|呼吸困難|輔助呼("聽診、血糖")
-        輔助1-->|胸痛|輔助胸(聽診)
-        輔助1-->|毒藥物中毒|輔助毒(瞳孔)
-        輔助1-->|腦中風|輔助腦("微笑 舉手 說你好、瞳孔、血糖")
+        輔助1["
+            除非 OHCA: 血壓、血氧、體溫
+            混亂、冒冷汗、虛弱、顫抖、嚴重脫水、低體溫、糖尿病、肝硬化: 血糖
+            急性意識改變: 血糖、GCS
+            呼吸困難: 聽診、血糖
+            胸痛: 聽診
+            毒藥物中毒: 瞳孔
+            腦中風: G-FAST(眼動、微笑 舉手 說你好)、瞳孔、血糖
+        "]
+        style 輔助1 text-align: left
     end
     輔助-->危急{危急個案}
-    危急-->|危急|救護車[救護車]
-    救護車-->二評
-    危急-->|非危急|二評
-    subgraph 二評
+    危急-->二評
+    subgraph 二評["二評 (BLS 非危急現場二評)"]
         direction LR
-        二評1["意識、體溫、瞳孔、膚色、呼吸、脈搏、血壓、血氧"]
-        二評2["氣管偏移、頸靜脈怒張或塌陷、聽診肺音、視診腹部、觸診腹部、肢體浮腫、紅疹紫斑、皮膚針孔"]
+        二評1["[意<sub>識</sub>]、[呼<sub>吸</sub>]、脈<sub>搏</sub>、<sub>血</sub>壓、[瞳<sub>孔</sub>]、體<sub>溫</sub>、[膚<sub>色</sub>]、<sub>血</sub>氧"]
+        二評2["
+            頸: 氣管<sub>是否偏移</sub>、頸靜脈<sub>是否怒張或塌陷</sub>
+            胸: <sub>是否</sub>紅疹紫斑、起伏<sub>是否對等</sub>、<sub>聽診</sub>肺音
+            腹: <sub>是否</sub>腫脹、<sub>是否</sub>壓痛<sub>(四區)</sub>
+            四肢: <sub>是否</sub>紅疹紫斑、針孔、水腫、浮腫
+            紅疹紫斑
+        "]
+        style 二評2 text-align: left
     end
+    二評-->救護車回報
 ```
-
-### 非創傷流程
-
-氣管偏移, 頸靜脈怒張或塌陷, 頸椎是否壓痛, 皮下氣腫, 骨盆, 致命性傷口
 
 ### 危急個案
 
